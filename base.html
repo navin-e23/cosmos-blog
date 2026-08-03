@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>{% block title %}Admin{% endblock %} — CosmoBlog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}"/>
+</head>
+<body class="admin-body">
+
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-brand">
+      <span>🌌</span>
+      <span>Admin Panel</span>
+    </div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin_dashboard') }}"  class="admin-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">📊 Dashboard</a>
+      <a href="{{ url_for('admin_posts') }}"      class="admin-link {% if 'post' in request.endpoint %}active{% endif %}">📝 Posts</a>
+      <a href="{{ url_for('admin_categories') }}" class="admin-link {% if 'categor' in request.endpoint %}active{% endif %}">🏷 Categories</a>
+      <a href="{{ url_for('admin_comments') }}"   class="admin-link {% if 'comment' in request.endpoint %}active{% endif %}">💬 Comments</a>
+      <a href="{{ url_for('admin_users') }}"      class="admin-link {% if 'user' in request.endpoint %}active{% endif %}">👥 Users</a>
+      <div class="admin-divider"></div>
+      <a href="{{ url_for('index') }}"  class="admin-link">🌐 View Blog</a>
+      <a href="{{ url_for('logout') }}" class="admin-link">🚪 Logout</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <h1 class="admin-page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+      <span class="admin-user">👤 {{ current_user().username }}</span>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-wrap">
+          {% for cat, msg in messages %}
+            <div class="flash flash-{{ cat }}">
+              <span>{{ msg }}</span>
+              <button onclick="this.parentElement.remove()" class="flash-close">✕</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="admin-content">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

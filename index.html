@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %}CosmoBlog — Explore the Universe of Ideas{% endblock %}
+
+{% block content %}
+
+<!-- ── HERO ── -->
+{% if not search and not active_cat %}
+<section class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">🚀 Welcome to CosmoBlog</p>
+    <h1 class="hero-title">Where Ideas<br><span class="gradient-text">Orbit the Mind</span></h1>
+    <p class="hero-sub">Discover articles on technology, science, space, lifestyle, and beyond. Written by curious minds, for curious minds.</p>
+    <form action="{{ url_for('index') }}" method="get" class="hero-search">
+      <input type="text" name="q" placeholder="Search the cosmos..." value="{{ search }}" class="search-input"/>
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+  </div>
+  <!-- Floating orbs -->
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+</section>
+{% endif %}
+
+<!-- ── CATEGORIES BAR ── -->
+<div class="container">
+  <div class="cat-bar">
+    <a href="{{ url_for('index') }}" class="cat-pill {% if not active_cat %}active{% endif %}">All</a>
+    {% for cat in categories %}
+      <a href="{{ url_for('index', category=cat.slug) }}"
+         class="cat-pill {% if active_cat and active_cat.id == cat.id %}active{% endif %}"
+         style="--cat-color: {{ cat.color }}">
+        {{ cat.name }}
+      </a>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ── SEARCH HEADER ── -->
+{% if search %}
+<div class="container">
+  <div class="search-header">
+    <h2>Results for <span class="gradient-text">"{{ search }}"</span></h2>
+    <a href="{{ url_for('index') }}" class="btn btn-ghost btn-sm">✕ Clear</a>
+  </div>
+</div>
+{% endif %}
+
+<!-- ── FEATURED POST ── -->
+{% if featured and not search and not active_cat %}
+<div class="container">
+  <div class="featured-card">
+    <div class="featured-emoji">{{ featured.cover_emoji }}</div>
+    <div class="featured-body">
+      <div class="featured-meta">
+        <span class="tag-featured">⭐ Featured</span>
+        {% if featured.category %}
+          <span class="cat-badge" style="--cat-color: {{ featured.category.color }}">{{ featured.category.name }}</span>
+        {% endif %}
+      </div>
+      <h2 class="featured-title">
+        <a href="{{ url_for('post_detail', slug=featured.slug) }}">{{ featured.title }}</a>
+      </h2>
+      {% if featured.excerpt %}
+        <p class="featured-excerpt">{{ featured.excerpt }}</p>
+      {% endif %}
+      <div class="featured-footer">
+        <span class="post-meta">By {{ featured.author.username }} · {{ featured.created_at.strftime('%b %d, %Y') }} · 👁 {{ featured.views }} views</span>
+        <a href="{{ url_for('post_detail', slug=featured.slug) }}" class="btn btn-primary btn-sm">Read Article →</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- ── POSTS GRID ── -->
+<div class="container">
+  <div class="section-header">
+    <h2 class="section-title">
+      {% if active_cat %}{{ active_cat.name }} Articles
+      {% elif search %}Search Results
+      {% else %}Latest Articles{% endif %}
+    </h2>
+  </div>
+
+  {% if posts.items %}
+    <div class="posts-grid">
+      {% for post in posts.items %}
+        <article class="post-card">
+          <div class="post-card-emoji">{{ post.cover_emoji }}</div>
+          <div class="post-card-body">
+            <div class="post-card-meta">
+              {% if post.category %}
+                <span class="cat-badge" style="--cat-color: {{ post.category.color }}">{{ post.category.name }}</span>
+              {% endif %}
+              <span class="post-date">{{ post.created_at.strftime('%b %d, %Y') }}</span>
+            </div>
+            <h3 class="post-card-title">
+              <a href="{{ url_for('post_detail', slug=post.slug) }}">{{ post.title }}</a>
+            </h3>
+            {% if post.excerpt %}
+              <p class="post-card-excerpt">{{ post.excerpt }}</p>
+            {% endif %}
+            <div class="post-card-footer">
+              <span class="post-author">👤 {{ post.author.username }}</span>
+              <span class="post-views">👁 {{ post.views }}</span>
+              <span class="post-comments">💬 {{ post.comments|length }}</span>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if posts.pages > 1 %}
+      <div class="pagination">
+        {% if posts.has_prev %}
+          <a href="{{ url_for('index', page=posts.prev_num, category=active_cat.slug if active_cat else '', q=search) }}" class="page-btn">← Prev</a>
+        {% endif %}
+        {% for p in posts.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+          {% if p %}
+            <a href="{{ url_for('index', page=p, category=active_cat.slug if active_cat else '', q=search) }}"
+               class="page-btn {% if p == posts.page %}active{% endif %}">{{ p }}</a>
+          {% else %}
+            <span class="page-ellipsis">…</span>
+          {% endif %}
+        {% endfor %}
+        {% if posts.has_next %}
+          <a href="{{ url_for('index', page=posts.next_num, category=active_cat.slug if active_cat else '', q=search) }}" class="page-btn">Next →</a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🔭</div>
+      <h3>No articles found</h3>
+      <p>{% if search %}No results for "{{ search }}". Try a different search.{% else %}No articles published yet. Check back soon!{% endif %}</p>
+      <a href="{{ url_for('index') }}" class="btn btn-primary">Go Home</a>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

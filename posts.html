@@ -1,0 +1,74 @@
+{% extends 'admin/base.html' %}
+{% block title %}Posts{% endblock %}
+{% block page_title %}All Posts{% endblock %}
+
+{% block content %}
+<div class="admin-card">
+  <div class="admin-card-header">
+    <h2>{{ posts|length }} Posts</h2>
+    <a href="{{ url_for('admin_new_post') }}" class="btn btn-primary">✏️ New Post</a>
+  </div>
+
+  {% if posts %}
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Author</th>
+          <th>Status</th>
+          <th>Views</th>
+          <th>Comments</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for post in posts %}
+          <tr>
+            <td class="td-title">
+              <a href="{{ url_for('post_detail', slug=post.slug) }}" target="_blank">{{ post.title[:45] }}{% if post.title|length > 45 %}…{% endif %}</a>
+            </td>
+            <td>
+              {% if post.category %}
+                <span class="cat-badge-sm" style="--cat-color: {{ post.category.color }}">{{ post.category.name }}</span>
+              {% else %}<span class="text-muted">—</span>{% endif %}
+            </td>
+            <td>{{ post.author.username }}</td>
+            <td>
+              <button class="toggle-btn badge {% if post.published %}badge-green{% else %}badge-gray{% endif %}"
+                      data-id="{{ post.id }}" onclick="togglePost({{ post.id }}, this)">
+                {{ 'Published' if post.published else 'Draft' }}
+              </button>
+            </td>
+            <td>{{ post.views }}</td>
+            <td>{{ post.comments|length }}</td>
+            <td class="text-muted">{{ post.created_at.strftime('%b %d, %Y') }}</td>
+            <td class="td-actions">
+              <a href="{{ url_for('admin_edit_post', id=post.id) }}" class="btn btn-ghost btn-xs">Edit</a>
+              <form action="{{ url_for('admin_delete_post', id=post.id) }}" method="post" style="display:inline">
+                <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Delete this post?')">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty-state-sm">
+      <p>No posts yet. <a href="{{ url_for('admin_new_post') }}">Create your first post →</a></p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function togglePost(id, btn) {
+  const res  = await fetch(`/admin/posts/${id}/toggle`, { method: 'POST' });
+  const data = await res.json();
+  btn.textContent = data.published ? 'Published' : 'Draft';
+  btn.className   = `toggle-btn badge ${data.published ? 'badge-green' : 'badge-gray'}`;
+}
+</script>
+{% endblock %}

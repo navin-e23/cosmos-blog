@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}{% if mode == 'login' %}Login{% else %}Register{% endif %} — CosmoBlog{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-icon">🌌</div>
+    <h1 class="auth-title">
+      {% if mode == 'login' %}Welcome Back{% else %}Join CosmoBlog{% endif %}
+    </h1>
+    <p class="auth-sub">
+      {% if mode == 'login' %}Sign in to your account to continue exploring.
+      {% else %}Create an account and start your cosmic journey.{% endif %}
+    </p>
+
+    <form method="post" class="auth-form">
+      {% if mode == 'register' %}
+        <div class="form-field">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required/>
+        </div>
+      {% endif %}
+
+      <div class="form-field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="your_username" required autocomplete="username"/>
+      </div>
+
+      <div class="form-field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password"
+               placeholder="{% if mode == 'register' %}At least 6 characters{% else %}Your password{% endif %}"
+               required autocomplete="{% if mode == 'login' %}current-password{% else %}new-password{% endif %}"/>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full">
+        {% if mode == 'login' %}Sign In →{% else %}Create Account →{% endif %}
+      </button>
+    </form>
+
+    <div class="auth-switch">
+      {% if mode == 'login' %}
+        Don't have an account? <a href="{{ url_for('register') }}">Sign up free</a>
+      {% else %}
+        Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
+      {% endif %}
+    </div>
+
+    {% if mode == 'login' %}
+      <div class="auth-demo">
+        <p>🔑 Demo Admin: <code>admin</code> / <code>admin123</code></p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'admin/base.html' %}
+{% block title %}Comments{% endblock %}
+{% block page_title %}Manage Comments{% endblock %}
+
+{% block content %}
+<div class="admin-card">
+  <div class="admin-card-header">
+    <h2>{{ comments|length }} Comments</h2>
+  </div>
+  {% if comments %}
+    <table class="admin-table">
+      <thead><tr><th>Author</th><th>Comment</th><th>Post</th><th>Date</th><th></th></tr></thead>
+      <tbody>
+        {% for c in comments %}
+          <tr>
+            <td><strong>{{ c.author.username }}</strong></td>
+            <td>{{ c.body[:80] }}{% if c.body|length > 80 %}…{% endif %}</td>
+            <td><a href="{{ url_for('post_detail', slug=c.post.slug) }}" target="_blank">{{ c.post.title[:30] }}…</a></td>
+            <td class="text-muted">{{ c.created_at.strftime('%b %d, %Y') }}</td>
+            <td>
+              <form action="{{ url_for('admin_delete_comment', id=c.id) }}" method="post">
+                <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Delete comment?')">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty-msg">No comments yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

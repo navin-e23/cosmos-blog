@@ -1,0 +1,71 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ 'Edit' if post else 'New' }} Post{% endblock %}
+{% block page_title %}{{ 'Edit Post' if post else 'Create New Post' }}{% endblock %}
+
+{% block content %}
+<div class="admin-card">
+  <form method="post" class="post-form">
+
+    <div class="form-row two-col">
+      <div class="form-field">
+        <label for="title">Post Title *</label>
+        <input type="text" id="title" name="title"
+               value="{{ post.title if post else '' }}"
+               placeholder="An Interesting Article Title..." required/>
+      </div>
+      <div class="form-field">
+        <label for="cover_emoji">Cover Emoji</label>
+        <input type="text" id="cover_emoji" name="cover_emoji"
+               value="{{ post.cover_emoji if post else '🌌' }}"
+               placeholder="🌌" maxlength="4" style="max-width:100px"/>
+      </div>
+    </div>
+
+    <div class="form-row two-col">
+      <div class="form-field">
+        <label for="category_id">Category</label>
+        <select id="category_id" name="category_id">
+          <option value="">— None —</option>
+          {% for cat in categories %}
+            <option value="{{ cat.id }}"
+              {% if post and post.category_id == cat.id %}selected{% endif %}>
+              {{ cat.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-field form-check-wrap">
+        <label class="checkbox-label">
+          <input type="checkbox" name="publish"
+                 {% if post and post.published %}checked{% endif %}/>
+          <span>Publish immediately</span>
+        </label>
+        <small>Uncheck to save as draft.</small>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="excerpt">Short Excerpt <span class="text-muted">(shown on cards)</span></label>
+      <textarea id="excerpt" name="excerpt" rows="2"
+                placeholder="A brief summary of this article...">{{ post.excerpt if post else '' }}</textarea>
+    </div>
+
+    <div class="form-field">
+      <label for="content">Content * <span class="text-muted">(Markdown-style, use ## for headings)</span></label>
+      <textarea id="content" name="content" rows="20" required
+                placeholder="Write your article here...&#10;&#10;## Section Heading&#10;&#10;Your content goes here...">{{ post.content if post else '' }}</textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        {{ '💾 Update Post' if post else '🚀 Create Post' }}
+      </button>
+      <a href="{{ url_for('admin_posts') }}" class="btn btn-ghost">Cancel</a>
+      {% if post %}
+        <a href="{{ url_for('post_detail', slug=post.slug) }}" target="_blank" class="btn btn-ghost">👁 Preview</a>
+      {% endif %}
+    </div>
+
+  </form>
+</div>
+{% endblock %}

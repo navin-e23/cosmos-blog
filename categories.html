@@ -1,0 +1,50 @@
+{% extends 'admin/base.html' %}
+{% block title %}Categories{% endblock %}
+{% block page_title %}Categories{% endblock %}
+
+{% block content %}
+<div class="admin-row two-col">
+
+  <div class="admin-card">
+    <div class="admin-card-header"><h2>Add Category</h2></div>
+    <form method="post" class="post-form">
+      <div class="form-field">
+        <label>Category Name</label>
+        <input type="text" name="name" placeholder="e.g. Technology" required/>
+      </div>
+      <div class="form-field">
+        <label>Accent Color</label>
+        <input type="color" name="color" value="#6C63FF"/>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Category</button>
+    </form>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card-header"><h2>All Categories ({{ categories|length }})</h2></div>
+    {% if categories %}
+      <table class="admin-table">
+        <thead><tr><th>Name</th><th>Slug</th><th>Posts</th><th>Color</th><th></th></tr></thead>
+        <tbody>
+          {% for cat in categories %}
+            <tr>
+              <td><span class="cat-badge" style="--cat-color: {{ cat.color }}">{{ cat.name }}</span></td>
+              <td class="text-muted">{{ cat.slug }}</td>
+              <td>{{ cat.posts|length }}</td>
+              <td><span class="color-swatch" style="background:{{ cat.color }}"></span></td>
+              <td>
+                <form action="{{ url_for('admin_delete_category', id=cat.id) }}" method="post">
+                  <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Delete category?')">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-msg">No categories yet.</p>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

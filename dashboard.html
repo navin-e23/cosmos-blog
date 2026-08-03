@@ -1,0 +1,95 @@
+{% extends 'admin/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon">📝</div>
+    <div class="stat-value">{{ stats.posts }}</div>
+    <div class="stat-label">Total Posts</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">👥</div>
+    <div class="stat-value">{{ stats.users }}</div>
+    <div class="stat-label">Registered Users</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">💬</div>
+    <div class="stat-value">{{ stats.comments }}</div>
+    <div class="stat-label">Comments</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">👁</div>
+    <div class="stat-value">{{ stats.views }}</div>
+    <div class="stat-label">Total Views</div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="admin-row">
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2>Quick Actions</h2>
+    </div>
+    <div class="quick-actions">
+      <a href="{{ url_for('admin_new_post') }}"    class="btn btn-primary">✏️ New Post</a>
+      <a href="{{ url_for('admin_categories') }}"  class="btn btn-ghost">🏷 Add Category</a>
+      <a href="{{ url_for('admin_comments') }}"    class="btn btn-ghost">💬 Moderate Comments</a>
+      <a href="{{ url_for('admin_users') }}"       class="btn btn-ghost">👥 Manage Users</a>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Data -->
+<div class="admin-row two-col">
+
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2>Recent Posts</h2>
+      <a href="{{ url_for('admin_posts') }}" class="btn btn-ghost btn-sm">View All</a>
+    </div>
+    {% if recent_posts %}
+      <table class="admin-table">
+        <thead><tr><th>Title</th><th>Status</th><th>Views</th></tr></thead>
+        <tbody>
+          {% for post in recent_posts %}
+            <tr>
+              <td><a href="{{ url_for('admin_edit_post', id=post.id) }}">{{ post.title[:40] }}{% if post.title|length > 40 %}…{% endif %}</a></td>
+              <td><span class="badge {% if post.published %}badge-green{% else %}badge-gray{% endif %}">{{ 'Published' if post.published else 'Draft' }}</span></td>
+              <td>{{ post.views }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-msg">No posts yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2>Recent Comments</h2>
+      <a href="{{ url_for('admin_comments') }}" class="btn btn-ghost btn-sm">View All</a>
+    </div>
+    {% if recent_comments %}
+      <div class="comment-list-mini">
+        {% for c in recent_comments %}
+          <div class="comment-mini">
+            <div class="comment-mini-head">
+              <strong>{{ c.author.username }}</strong>
+              <span class="text-muted">on {{ c.post.title[:30] }}…</span>
+            </div>
+            <p class="comment-mini-body">{{ c.body[:100] }}{% if c.body|length > 100 %}…{% endif %}</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-msg">No comments yet.</p>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
