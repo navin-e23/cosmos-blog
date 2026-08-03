@@ -240,15 +240,3 @@ https://cosmos-blog.onrender.com
 | `/admin/comments` | Moderate comments |
 | `/admin/users` | Manage users |
 
----
-
-## 📜 License
-
-MIT License — free to use, modify, and submit as your internship project.
-
----
-
-## 👤 Author
-
-Built as **Project 6 — Blog Website** for a Python Developer Internship.
-Crafted with ☕, Python, and a love for the cosmos. 🌌
